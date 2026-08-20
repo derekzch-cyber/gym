@@ -1,0 +1,715 @@
+<title>今日做咩</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&display=swap">
+
+<style>
+  :root {
+    --paper:#EDF0EE; --card:#FFFFFF; --sunk:#E4E8E5;
+    --ink:#14181A; --ink-2:#48524F; --steel:#78837E; --rule:#D3D9D5;
+    --accent:#0E7C6B; --accent-w:#0E7C6B14; --accent-m:#0E7C6B2E;
+    --heat:#C2410C; --gold:#8A6A1C;
+    --han:"PingFang TC","PingFang SC","Hiragino Sans GB","Microsoft JhengHei",system-ui,sans-serif;
+    --disp:"Barlow Condensed","Helvetica Neue Condensed","Arial Narrow",system-ui,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+    --s1:.35rem; --s2:.7rem; --s3:1.05rem; --s4:1.7rem; --s5:2.4rem;
+    --r:9px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:#0C0F0E; --card:#171B1A; --sunk:#101413;
+      --ink:#E9ECEA; --ink-2:#A4ADA9; --steel:#7C8783; --rule:#252B29;
+      --accent:#3FBFA6; --accent-w:#3FBFA61A; --accent-m:#3FBFA636;
+      --heat:#F0763F; --gold:#D4AC50;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:#0C0F0E; --card:#171B1A; --sunk:#101413;
+    --ink:#E9ECEA; --ink-2:#A4ADA9; --steel:#7C8783; --rule:#252B29;
+    --accent:#3FBFA6; --accent-w:#3FBFA61A; --accent-m:#3FBFA636;
+    --heat:#F0763F; --gold:#D4AC50;
+  }
+
+  *, *::before, *::after { box-sizing:border-box; }
+  [hidden] { display:none !important; }
+
+  body {
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--han); font-size:16.5px; line-height:1.6;
+    -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%;
+  }
+  .wrap {
+    max-width:33rem; margin:0 auto;
+    padding:var(--s3) var(--s3) 6rem;
+    display:flex; flex-direction:column; gap:var(--s3);
+  }
+
+  /* ── status ─────────────────────────────────── */
+  .status {
+    display:flex; justify-content:space-between; align-items:baseline; gap:var(--s2);
+    font-family:var(--disp); font-weight:500; font-size:.94rem;
+    letter-spacing:.03em; color:var(--steel);
+    font-variant-numeric:tabular-nums;
+    border-bottom:1px solid var(--rule); padding-bottom:var(--s2);
+  }
+  .status b { color:var(--ink); font-weight:600; }
+  .status .cd { color:var(--gold); font-weight:600; }
+
+  /* ── hero ───────────────────────────────────── */
+  .hero {
+    background:var(--card); border:1px solid var(--rule); border-radius:var(--r);
+    border-top:4px solid var(--accent);
+    padding:var(--s4) var(--s3) var(--s3);
+    display:flex; flex-direction:column; gap:var(--s1);
+  }
+  .hero.rest   { border-top-color:var(--steel); }
+  .hero.cardio { border-top-color:var(--gold); }
+  .hero.peek   { border-top-style:dashed; }
+  .hero .kick {
+    font-family:var(--disp); font-weight:600; font-size:.82rem;
+    letter-spacing:.18em; text-transform:uppercase; color:var(--steel);
+  }
+  .hero h1 {
+    font-family:var(--disp); font-weight:700;
+    font-size:clamp(2.6rem,13vw,3.6rem); line-height:.94;
+    letter-spacing:-.005em; margin:.1em 0 .1em; text-wrap:balance;
+  }
+  .hero .sub { color:var(--ink-2); font-size:.97rem; }
+  .hero .note {
+    font-size:.88rem; line-height:1.55; color:var(--ink-2);
+    background:var(--accent-w); border-radius:6px;
+    padding:var(--s2) var(--s3); margin-top:var(--s2);
+  }
+  .hero .note b { color:var(--ink); }
+
+  /* ── block shell ────────────────────────────── */
+  .block {
+    background:var(--card); border:1px solid var(--rule);
+    border-radius:var(--r); overflow:hidden;
+  }
+  .bhdr {
+    display:flex; justify-content:space-between; align-items:center; gap:var(--s2);
+    margin:0; padding:.6rem var(--s3);
+    background:var(--accent-w); border-bottom:1px solid var(--rule);
+    font-family:var(--disp); font-weight:600; font-size:.86rem;
+    letter-spacing:.15em; text-transform:uppercase; color:var(--steel);
+  }
+  .bhdr .cnt {
+    font-size:1rem; letter-spacing:.04em; color:var(--accent);
+    font-variant-numeric:tabular-nums;
+  }
+
+  /* ── exercise row ───────────────────────────── */
+  .row { display:flex; align-items:stretch; border-top:1px solid var(--rule); }
+  .row:first-child { border-top:0; }
+  .row.later { opacity:.45; }
+  .row.done .nm { text-decoration:line-through; text-decoration-color:var(--steel); }
+  .row.done .sr { opacity:.5; }
+
+  .tick {
+    flex:0 0 3rem; border:0; border-right:1px solid var(--rule);
+    background:var(--sunk); color:var(--steel); cursor:pointer;
+    font-family:var(--disp); font-weight:700; font-size:1.5rem;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .18s ease, color .18s ease;
+  }
+  .tick:disabled { cursor:default; }
+  .row.done .tick { background:var(--accent); color:#fff; }
+  :root[data-theme="dark"] .row.done .tick,
+  .tick.dk { color:#0C0F0E; }
+  .tick:focus-visible { outline:2px solid var(--accent); outline-offset:-3px; }
+
+  .main {
+    flex:1 1 auto; display:flex; align-items:baseline; gap:var(--s2);
+    background:transparent; border:0; font:inherit; color:inherit;
+    text-align:left; cursor:pointer; padding:.62rem var(--s3) .68rem;
+    min-width:0;
+  }
+  .main:disabled { cursor:default; }
+  .main:focus-visible { outline:2px solid var(--accent); outline-offset:-3px; }
+  .nm { flex:1 1 auto; min-width:0; font-weight:600; font-size:.99rem; line-height:1.35; }
+  .nm em {
+    display:block; font-style:normal; font-weight:400;
+    font-size:.79rem; color:var(--steel); margin-top:.12rem;
+  }
+  .nm .tog { font-family:var(--disp); font-size:.95rem; color:var(--accent); margin-left:.35em; }
+  .sr {
+    flex:0 0 auto; text-align:right; font-family:var(--disp);
+    font-variant-numeric:tabular-nums; line-height:1.25;
+  }
+  .sr b { display:block; font-weight:700; font-size:1.32rem; color:var(--ink); letter-spacing:.01em; }
+  .sr em { display:block; font-style:normal; font-size:.86rem; color:var(--steel); font-weight:500; }
+  .sr em.last { color:var(--accent); font-weight:600; }
+
+  .later-hdr {
+    padding:.42rem var(--s3); background:var(--sunk);
+    border-top:1px solid var(--rule);
+    font-family:var(--disp); font-weight:500; font-size:.84rem;
+    letter-spacing:.1em; color:var(--steel); text-transform:uppercase;
+  }
+
+  /* ── expanded cue ───────────────────────────── */
+  .cue {
+    border-top:1px solid var(--rule); background:var(--sunk);
+    padding:var(--s3); display:flex; flex-direction:column; gap:var(--s2);
+  }
+  .vids { display:flex; flex-wrap:wrap; gap:.5rem; }
+  .vids a {
+    flex:1 1 8rem; text-align:center; text-decoration:none;
+    font-family:var(--disp); font-weight:600; font-size:1.02rem; letter-spacing:.04em;
+    background:var(--accent); color:#fff; border-radius:6px; padding:.5rem .7rem;
+  }
+  .vids a.alt { background:transparent; color:var(--accent); border:1px solid var(--accent-m); }
+  .vids a:focus-visible { outline:2px solid var(--ink); outline-offset:2px; }
+  .frame { width:100%; aspect-ratio:16/9; border:0; border-radius:6px; background:#000; }
+
+  .wt {
+    font-family:var(--disp); font-weight:600; font-size:1.02rem;
+    color:var(--ink); letter-spacing:.01em;
+  }
+  .wt span { color:var(--steel); font-weight:500; }
+  .cue ol { margin:0; padding-left:1.15rem; font-size:.9rem; line-height:1.6; color:var(--ink-2); }
+  .cue ol li { margin:.1rem 0; }
+  .cue ol li::marker { color:var(--accent); font-family:var(--disp); font-weight:700; }
+  .miss { font-size:.87rem; line-height:1.55; color:var(--ink-2); }
+  .miss b { color:var(--heat); font-family:var(--disp); font-weight:700; letter-spacing:.08em; font-size:.95rem; }
+
+  .logbar { display:flex; gap:.45rem; align-items:stretch; }
+  .logbar input {
+    flex:1 1 auto; min-width:0; font:inherit; font-size:.92rem;
+    background:var(--card); color:var(--ink);
+    border:1px solid var(--rule); border-radius:6px; padding:.45rem .6rem;
+  }
+  .logbar input::placeholder { color:var(--steel); }
+  .logbar input:focus-visible { outline:2px solid var(--accent); outline-offset:-1px; border-color:var(--accent); }
+  .logbar button {
+    flex:0 0 auto; font-family:var(--disp); font-weight:600; font-size:1rem; letter-spacing:.06em;
+    background:var(--accent-w); color:var(--accent);
+    border:1px solid var(--accent-m); border-radius:6px; padding:.45rem .95rem; cursor:pointer;
+  }
+  .logbar button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .saved { font-family:var(--disp); font-size:.9rem; color:var(--accent); letter-spacing:.04em; }
+
+  /* ── posture / food rows ────────────────────── */
+  .prow, .drow {
+    display:flex; justify-content:space-between; align-items:baseline; gap:var(--s2);
+    padding:.55rem var(--s3); border-top:1px solid var(--rule);
+  }
+  .prow:first-of-type, .drow:first-of-type { border-top:0; }
+  .prow a {
+    font-family:var(--disp); font-weight:600; font-size:.98rem; letter-spacing:.04em;
+    color:var(--accent); text-decoration:none; white-space:nowrap;
+  }
+  .prow .k, .drow .k { font-weight:600; font-size:.95rem; }
+  .prow .k em { display:block; font-style:normal; font-weight:400; font-size:.79rem; color:var(--steel); }
+  .drow .v {
+    font-family:var(--disp); font-weight:500; font-size:1.02rem; color:var(--ink-2);
+    text-align:right; line-height:1.35; font-variant-numeric:tabular-nums;
+  }
+  .meal { padding:.6rem var(--s3); border-top:1px solid var(--rule); }
+  .meal:first-of-type { border-top:0; }
+  .meal .mh {
+    display:flex; align-items:baseline; gap:.5rem;
+    font-family:var(--disp); font-weight:700; font-size:1.12rem; letter-spacing:.03em;
+  }
+  .meal .mh i {
+    font-style:normal; font-weight:500; font-size:.92rem; color:var(--gold);
+    font-variant-numeric:tabular-nums; letter-spacing:.04em;
+  }
+  .meal p { margin:.1rem 0 0; font-size:.9rem; line-height:1.55; color:var(--ink-2); }
+  .sub-hdr {
+    padding:.42rem var(--s3); background:var(--sunk); border-top:1px solid var(--rule);
+    font-family:var(--disp); font-weight:600; font-size:.82rem;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--steel);
+  }
+
+  /* ── checklist ──────────────────────────────── */
+  .chk { display:flex; align-items:center; gap:.65rem; padding:.5rem var(--s3);
+         border-top:1px solid var(--rule); cursor:pointer; font-size:.94rem; }
+  .chk:first-of-type { border-top:0; }
+  .chk input { width:1.15rem; height:1.15rem; accent-color:var(--accent); flex:0 0 auto; }
+  .chk input:checked + span { color:var(--steel); text-decoration:line-through; }
+
+  /* ── week strip ─────────────────────────────── */
+  .strip { display:grid; grid-template-columns:repeat(7,1fr); gap:.3rem; }
+  .sd {
+    display:flex; flex-direction:column; align-items:center; gap:.1rem;
+    padding:.45rem .1rem; cursor:pointer;
+    background:var(--card); border:1px solid var(--rule); border-radius:6px;
+    font-family:var(--disp); color:var(--ink-2);
+  }
+  .sd .w { font-weight:700; font-size:1.05rem; }
+  .sd .l { font-size:.8rem; color:var(--steel); letter-spacing:.02em; }
+  .sd.off { opacity:.55; }
+  .sd.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .sd.on .l { color:#ffffffcc; }
+  .sd.peeking { border-color:var(--accent); border-style:dashed; }
+  .sd:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+
+  .back {
+    align-self:flex-start; font-family:var(--disp); font-weight:600;
+    font-size:.95rem; letter-spacing:.06em; color:var(--accent);
+    background:transparent; border:1px solid var(--accent-m);
+    border-radius:6px; padding:.35rem .8rem; cursor:pointer;
+  }
+  .back:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+
+  .foot {
+    font-size:.8rem; line-height:1.6; color:var(--steel);
+    border-top:1px solid var(--rule); padding-top:var(--s2);
+  }
+
+  /* ── sticky progress ────────────────────────── */
+  .bar {
+    position:fixed; left:0; right:0; bottom:0; z-index:20;
+    background:var(--card); border-top:1px solid var(--rule);
+    padding:.55rem var(--s3) calc(.55rem + env(safe-area-inset-bottom));
+  }
+  .bar .in { max-width:33rem; margin:0 auto; display:flex; flex-direction:column; gap:.4rem; }
+  .bar .lab {
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-family:var(--disp); font-weight:600; font-size:1.02rem;
+    letter-spacing:.06em; color:var(--ink-2); font-variant-numeric:tabular-nums;
+  }
+  .bar .lab b { color:var(--accent); font-size:1.2rem; }
+  .track { height:5px; border-radius:3px; background:var(--sunk); overflow:hidden; }
+  .fill { height:100%; width:0; background:var(--accent); border-radius:3px;
+          transition:width .35s cubic-bezier(.4,0,.2,1); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration:.01ms !important; animation-duration:.01ms !important; }
+  }
+</style>
+
+<div class="wrap">
+
+  <div class="status">
+    <span id="s-date">—</span>
+    <span><b id="s-week">—</b></span>
+    <span class="cd" id="s-cd">—</span>
+  </div>
+
+  <section class="hero" id="hero">
+    <span class="kick" id="h-kick">今日</span>
+    <h1 id="h-title">—</h1>
+    <span class="sub" id="h-sub"></span>
+    <div class="note" id="h-note" hidden></div>
+    <button type="button" class="back" id="h-back" hidden>← 返今日</button>
+  </section>
+
+  <section class="block" id="lifts" hidden>
+    <h2 class="bhdr"><span id="l-hdr">今日動作</span><span class="cnt" id="l-cnt"></span></h2>
+    <div id="l-rows"></div>
+  </section>
+
+  <section class="block" id="posture">
+    <h2 class="bhdr"><span>體態 6 分鐘</span><span class="cnt">每日</span></h2>
+    <div id="p-rows"></div>
+  </section>
+
+  <section class="block">
+    <h2 class="bhdr"><span id="d-hdr">今日食</span><span class="cnt" id="d-pro">蛋白 130–145g</span></h2>
+    <div id="d-meals"></div>
+    <div class="sub-hdr">份量標準</div>
+    <div id="d-rows"></div>
+  </section>
+
+  <section class="block">
+    <h2 class="bhdr"><span>收工前</span></h2>
+    <div id="c-rows"></div>
+  </section>
+
+  <nav class="strip" id="strip" aria-label="一週"></nav>
+
+  <p class="foot" id="foot"></p>
+</div>
+
+<div class="bar" id="bar" hidden>
+  <div class="in">
+    <div class="lab"><span id="b-lab">今日動作</span><span><b id="b-n">0</b> / <span id="b-t">0</span></span></div>
+    <div class="track"><div class="fill" id="b-fill"></div></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var START = new Date(2026, 7, 17);   // W1 D1 = 2026-08-17 星期一
+  var BDAY  = new Date(2026, 9, 9);    // 生日
+  var WD = ['日','一','二','三','四','五','六'];
+
+  function vid(id) { return 'https://www.youtube.com/watch?v=' + id; }
+
+  // 動作 = [名, 屋企版, 次數, 休息, W1組, W2+組, 起手重量, [重點×3], 最常錯, [gymVid, homeVid]]
+  var DAYS = {
+    1: { t:'推日', s:'胸 · 肩 · 三頭', cls:'', ex:[
+      ['平板槓鈴／啞鈴臥推','地板臥推 · 標準掌上壓','6–10','2–3′',3,4,'啞鈴一邊 12–14kg',
+        ['肩胛夾實貼住凳／地面，胸挺起','落到胸口，手肘同身體 45–60 度','落 2 秒，推上去用力'],
+        '屁股離凳或者腰塌落 = 重量太重', ['VmB1G1K7v94','IODxDxX7oi4']],
+      ['上斜啞鈴臥推','腳墊高掌上壓','10–12','90″',3,4,'一邊 8–10kg',
+        ['凳斜 30 度就夠，過 45 度變練膊頭','腳要墊到膝頭以上先算數','落到上臂同地面平就夠'],
+        '斜太高／腳墊太低 = 練唔到上胸', ['IP4oeKh1Sd4','HgPIETvnSHA']],
+      ['坐姿肩推','站姿帶推肩','8–12','90″',3,3,'器械 15–20kg 或啞鈴一邊 8kg',
+        ['坐直，腰貼實椅背，核心收緊','由耳邊高度推上，手肘略向前 20–30 度','落到上臂略低過肩'],
+        '推嗰陣腰拱起 = 重量太重', ['qEwKCR5JCog','0rLjkQweIDg']],
+      ['繩索夾胸','彈力帶夾胸','12–15','60″',0,3,'一邊 7–10kg',
+        ['手肘微彎並固定，全程唔准變角度','想像抱一棵樹，由外向內合','合到最埋停 1 秒'],
+        '用太重 = 變咗推胸，唔係夾胸', ['Iwe6AmxVf7o','yVcEkvgymt8']],
+      ['側平舉','水樽側平舉','12–15','60″',0,3,'一邊 4–6kg（真係咁輕）',
+        ['身體唔准擺動借力，企穩或者坐低做','舉到手同肩同高就停','尾指略高過拇指'],
+        '攞太重全身晃 = 5kg 做準勝過 12kg 亂擺', ['3VcKaXpzqRo','3VcKaXpzqRo']],
+      ['繩索三頭下壓','窄距掌上壓','12–15','60″',3,3,'15–20kg',
+        ['手肘貼身側固定，唔准前後移','推到最低將繩向兩側分開，停半秒','返上去只到手肘 90 度'],
+        '手肘移動 = 變咗用胸同背發力', ['2-LAMcpzODU','G2mlaEfpEIM']]
+    ]},
+    2: { t:'拉日', s:'背 · 二頭 · 體態', cls:'', ex:[
+      ['高位下拉／引體向上','要高錨點 · gym 日做','8–12','2′',3,4,'30–40kg',
+        ['握距約肩寬 1.5 倍，身體略後傾 10–15 度','起動係肩膊向下沉，唔係手臂拉','拉到鎖骨，唔好拉去頸後'],
+        '用手臂同二頭拉，背完全冇感覺', ['qMLOzlpHvDk','_97pmOC2tzE']],
+      ['槓鈴俯身划船','帶俯身划船','8–10','2′',3,4,'空槓 20kg 起 → 30–40kg',
+        ['髖向後推，軀幹傾到約 45 度','背由頭到臀一直線，拉向肚臍','頂點兩塊肩胛夾埋停半秒'],
+        '腰拱起 → 即刻停，呢個最易整親腰', ['FWJR5Ve8bnQ','vR9KcvzLqVo']],
+      ['單臂划船（左右各）','弓步帶划船','10–12','90″',3,3,'一邊 14–18kg',
+        ['弓步，前腳踩帶，另一手撐住大腿','手肘沿身體向後，拉向腰側','兩邊次數要一樣，睇弱嗰邊'],
+        '身體扭埋一邊借力 = 肩要保持平行', ['pYcpY20QaE8','LSkyinhmA8k']],
+      ['坐姿繩索划船','坐地帶划船','12–15','90″',3,3,'30–40kg',
+        ['腳伸直，帶繞過腳掌中央','拉向肚臍，唔係胸口','身體唔郁，只有手臂同肩胛動'],
+        '前後擺盪當划艇 = 身體應該幾乎唔郁', ['vwHG9Jfu4sw','ovn27-bSHj4']],
+      ['面拉 Face Pull','俯臥 Y-T-W','15–20','60″',3,3,'10–15kg',
+        ['面拉：滑輪要調到面部高度，唔係腰高','拉到手肘高過手腕，似投降手勢','YTW：舉起停 2 秒，慢慢放'],
+        '當佢係划船去用大力 = 要輕、要慢', ['V8dZ3pyiCBo','QdGTI4Lshg4']],
+      ['二頭彎舉','彈力帶彎舉','10–12','60″',0,3,'一邊 8–10kg',
+        ['手肘貼實身側，全程唔准郁','放落嗰下數 2 秒','唔好用腰向後仰甩上去'],
+        '成個身擺動 = 減重量，手肘釘住身側', ['av7-8igSXTs','pXS-fSPWpk8']]
+    ]},
+    3: { t:'腿日', s:'腿 + 核心', cls:'', ex:[
+      ['高腳杯／槓鈴深蹲','帶負重深蹲','8–12','2–3′',3,4,'高腳杯 16–20kg / 空槓 20kg 起',
+        ['腳尖向外 15–30 度，膝蓋跟住腳尖行','髖同膝一齊彎，蹲到大腿約水平','重心喺成隻腳掌，唔係腳尖'],
+        '底部尾龍骨捲埋（屁股眨眼）→ 蹲淺啲', ['gCESNsDsbqk','duP-UZsfOaQ']],
+      ['羅馬尼亞硬拉','帶羅馬尼亞硬拉','8–12','2′',3,3,'30–40kg',
+        ['膝微彎並固定，由頭到尾唔再多彎','髖向後推，帶／槓貼住大腿滑落','大腿後側拉緊就停，用臀拉返起身'],
+        '當佢係彎腰去攞嘢 → 背一拱即刻停', ['3VXmecChYYM','NaKsZos0bIY']],
+      ['腿推','保加利亞分腿蹲','12–15','90″',3,3,'腿推 60–80kg',
+        ['後腳腳背搭凳，前腳離一大步','身體垂直落，用前腳跟發力起身','蹲到底時前腳小腿要接近垂直'],
+        '前腳踩太近 → 膝頭痛九成係呢個', ['8EMbB0tCn7Q','SkNsa3eBwLA']],
+      ['腿彎舉','臀橋','12–15','60″',0,3,'20–30kg / 自重',
+        ['躺低腳踩地，用臀推起','頂點夾實停一秒','想加難度就單腿做'],
+        '靠拱腰頂上去，唔係夾臀', ['vl5nUdE9mWM','PhTDzR0TpZs']],
+      ['提踵','企台階邊做','15–20','45″',0,3,'一邊 10–16kg 或自重',
+        ['企台階邊，腳跟落到最低有拉伸','推到最高停一秒','上落各 2 秒'],
+        '用彈嘅 = 全程要控制', ['wxwY7GXxL4k','wxwY7GXxL4k']],
+      ['平板支撐 + 死蟲式','','30–60″','45″',3,3,'自重',
+        ['平板：手肘喺膊頭正下方，身體一直線','死蟲：對角伸出，腰全程貼實地下','兩個都係練唔郁，唔係鬥耐'],
+        '屁股翹起或者腰塌 → 形狀散咗就停', ['6LqqeBtFn9M','GbSC02oU3To']]
+    ]},
+    4: { t:'有氧日', s:'35 分鐘中低強度', cls:'cardio', chk:'35 分鐘有氧做咗',
+         note:'快走／單車／划船機都得，講到嘢但講唔到一整句嗰個強度。收工前做 5 分鐘拉筋。' },
+    5: { t:'體態日', s:'上胸 · 後肩 · 上背', cls:'', ex:[
+      ['上斜啞鈴臥推','腳墊高掌上壓','10–12','90″',3,4,'一邊 8–10kg',
+        ['凳斜 30 度就夠','腳要墊到膝頭以上','落到上臂同地面平'],
+        '斜太高變咗練膊頭', ['IP4oeKh1Sd4','HgPIETvnSHA']],
+      ['高位下拉（對握）','帶對握下拉','10–12','90″',3,3,'30–40kg',
+        ['先沉膊頭，再拉','拉到鎖骨位置','放返上去要控制'],
+        '用手臂拉，背冇感覺', ['E1FK9APxk54','_97pmOC2tzE']],
+      ['啞鈴肩推','站姿帶推肩','10–12','90″',3,3,'一邊 8kg',
+        ['坐直或企直，核心收緊','由耳邊推上，手肘略向前','落到上臂略低過肩'],
+        '腰拱起 = 太重', ['qEwKCR5JCog','0rLjkQweIDg']],
+      ['反向飛鳥','彈力帶反向飛鳥','15–20','60″',3,3,'一邊 4–6kg（真係咁輕）',
+        ['俯身或趴上斜凳，手肘微彎固定','手臂向兩側打開，尾指帶住向上','頂點停半秒'],
+        '用太重 → 變咗聳膊同用背闊', ['EA7u4Q_8HQ0','TVTP8Q1T3K8']],
+      ['面拉 Face Pull','俯臥 Y-T-W','15–20','60″',3,3,'10–15kg',
+        ['滑輪調到面部高度','拉到手肘高過手腕','輕重量、高次數'],
+        '當划船咁做 = 呢個練穩定肌，唔係鬥力', ['V8dZ3pyiCBo','QdGTI4Lshg4']],
+      ['二頭 + 三頭超級組','彈力帶版','12–15','60″',0,3,'二頭 8kg · 三頭 15kg',
+        ['彎舉：手肘貼身側唔准郁','下壓：手肘固定，推到底分開繩','兩個連住做，中間唔休息'],
+        '用身體擺動借力', ['av7-8igSXTs','2-LAMcpzODU']]
+    ]},
+    6: { t:'活動日', s:'出街行走都計', cls:'cardio', chk:'今日有郁過',
+         note:'行山、打波、快走、同人行街——郁到就得，唔使當訓練。真係想休息就休息，呢日唔強制。' },
+    0: { t:'全休', s:'睡眠 · 拉筋 · 記錄', cls:'rest',
+         note:'今日三件事：① 同一時間磅重 ② 影三張相（正／側／背）③ 量腰圍。然後乜都唔好做。' }
+  };
+
+  // 體態 6 分鐘 —— 針對寒背，每日做
+  var POSTURE = [
+    ['貓牛（胸椎版）','10 次 · 慢','qSmuPsi1_9g'],
+    ['彈力帶 Pull-Apart','2 × 15','stwYTTPXubo'],
+    ['俯臥 Y-T-W','各 10 次','QdGTI4Lshg4']
+  ];
+
+  var BASE_CHECKS = ['體態 6 分鐘','睡夠 7 鐘','每餐有蛋白'];
+
+  // ── 日期 / 階段 ────────────────────────────────
+  function d0(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+  function days(a, b) { return Math.round((d0(b) - d0(a)) / 86400000); }
+  function iso(d) {
+    return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+  }
+  var el = function (id) { return document.getElementById(id); };
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  var q = location.search.match(/[?&]d=(\d{4})-(\d{2})-(\d{2})/);
+  var today = q ? new Date(+q[1], +q[2] - 1, +q[3]) : d0(new Date());
+
+  el('s-date').textContent = (today.getMonth() + 1) + '月' + today.getDate() + '日 · 星期' + WD[today.getDay()];
+
+  var toBday = days(today, BDAY);
+  el('s-cd').textContent = toBday > 0 ? '仲有 ' + toBday + ' 日' : (toBday === 0 ? '🎂 生日快樂' : '已過');
+
+  var week = Math.max(1, Math.floor(days(START, today) / 7) + 1);
+  var phase, phaseNote, useB, phaseLabel;
+
+  if (week <= 1) {
+    phase = 'reboot'; useB = false; phaseLabel = 'W1 重啟';
+    phaseNote = '<b>W1 · 重啟</b> —— 每個動作留 3–4 下喺 tank 入面。呢個星期唯一嘅任務係<b>出現三次</b>，唔係練到散。';
+  } else if (week <= 3) {
+    phase = 'build'; useB = true; phaseLabel = 'W' + week + ' 累積';
+    phaseNote = '<b>W' + week + ' · 累積</b> —— 全部動作歸位。每組寫低重量 × 次數，今個星期至少有一項要贏返上星期。';
+  } else if (week <= 6) {
+    phase = 'push'; useB = true; phaseLabel = 'W' + week + ' 強化';
+    phaseNote = '<b>W' + week + ' · 強化</b> —— 主項練到剩 1–2 下 buffer，孤立動作可以去到力竭。體型變化最明顯就係呢幾週。';
+  } else if (week === 7) {
+    phase = 'peak'; useB = true; phaseLabel = 'W7 高峰';
+    phaseNote = '<b>W7 · 高峰</b> —— 維持強度，唔好加。';
+  } else if (week === 8) {
+    phase = 'taper'; useB = true; phaseLabel = 'W8 生日週';
+    phaseNote = '<b>W8 · 生日週</b> —— 組數減三分一，卸走疲勞。唔係休息，係收貨。10 月 8 號影最後一組相。';
+  } else {
+    phase = 'done'; useB = true; phaseLabel = '完成';
+  }
+  el('s-week').textContent = phaseLabel;
+
+  // ── 儲存 ───────────────────────────────────────
+  var DKEY = 'derek70:' + iso(today);
+  var LKEY = 'derek70:log';
+  var CAN_SAVE = true;
+  try { localStorage.setItem('_t', '1'); localStorage.removeItem('_t'); } catch (e) { CAN_SAVE = false; }
+  var dayState = {}, log = {};
+  try { dayState = JSON.parse(localStorage.getItem(DKEY) || '{}'); } catch (e) {}
+  try { log = JSON.parse(localStorage.getItem(LKEY) || '{}'); } catch (e) {}
+  function saveDay() { try { localStorage.setItem(DKEY, JSON.stringify(dayState)); } catch (e) {} }
+  function saveLog() { try { localStorage.setItem(LKEY, JSON.stringify(log)); } catch (e) {} }
+
+  var realDow = today.getDay();
+  var viewDow = realDow;
+
+  // ── 今日動作 ───────────────────────────────────
+  function setsOf(e) {
+    var s = useB ? e[5] : e[4];
+    return (phase === 'taper' && s > 0) ? Math.max(2, s - 1) : s;
+  }
+
+  function renderLifts(day, peeking) {
+    if (!day.ex) {
+      el('lifts').hidden = true; el('bar').hidden = true; el('l-rows').innerHTML = '';
+      return;
+    }
+    el('lifts').hidden = false;
+    el('l-hdr').textContent = peeking ? day.t + ' 動作' : '今日動作';
+
+    var idx = day.ex.map(function (e, i) { return i; });
+    var ordered = idx.filter(function (i) { return setsOf(day.ex[i]) > 0; })
+                     .concat(idx.filter(function (i) { return setsOf(day.ex[i]) === 0; }));
+
+    var html = '', laterHdr = false, n = 0;
+    ordered.forEach(function (i) {
+      var e = day.ex[i], sets = setsOf(e), later = sets === 0;
+      var name = e[0];
+      var rec = log[name];
+      var lastTxt = rec ? rec.v + '　' + rec.d.slice(5).replace('-', '/') : '';
+
+      if (later && !laterHdr) {
+        laterHdr = true;
+        html += '<div class="later-hdr">↓ 之後先加入 · 今日唔使做</div>';
+      }
+      if (!later) n++;
+
+      var done = !later && !peeking && dayState['x' + i] === true;
+
+      html += '<div class="row' + (later ? ' later' : '') + (done ? ' done' : '') + '" data-x="' + i + '">' +
+        '<button type="button" class="tick" data-tick="' + i + '"' + (later || peeking || !CAN_SAVE ? ' disabled' : '') +
+          ' data-n="' + (later ? '·' : n) + '"' +
+          ' aria-label="做完 ' + esc(name) + '" aria-pressed="' + (done ? 'true' : 'false') + '">' +
+          (done ? '✓' : (later ? '·' : n)) + '</button>' +
+        '<button type="button" class="main" data-c="' + i + '" aria-expanded="false">' +
+          '<span class="nm">' + esc(name) + '<i class="tog">＋</i>' +
+            (e[1] ? '<em>屋企：' + esc(e[1]) + '</em>' : '') + '</span>' +
+          '<span class="sr">' + (later
+            ? '<em>未開始</em>'
+            : '<b>' + sets + '×' + e[2] + '</b><em>休 ' + e[3] + '</em>' +
+              (lastTxt ? '<em class="last">上次 ' + esc(lastTxt) + '</em>' : '')) +
+          '</span>' +
+        '</button></div>' +
+        '<div class="cue" id="cue' + i + '" hidden>' +
+          '<div class="vids">' +
+            '<a href="' + vid(e[9][0]) + '" target="_blank" rel="noopener">▶ 健身房示範</a>' +
+            (e[9][1] && e[9][1] !== e[9][0]
+              ? '<a class="alt" href="' + vid(e[9][1]) + '" target="_blank" rel="noopener">▶ 屋企版示範</a>' : '') +
+          '</div>' +
+          (e[6] ? '<div class="wt"><span>起手重量　</span>' + esc(e[6]) + '</div>' : '') +
+          '<ol><li>' + e[7].map(esc).join('</li><li>') + '</li></ol>' +
+          (e[8] ? '<div class="miss"><b>最常錯　</b>' + esc(e[8]) + '</div>' : '') +
+          (peeking || !CAN_SAVE ? '' :
+            '<div class="logbar">' +
+              '<input type="text" inputmode="text" data-log="' + esc(name) + '" ' +
+                'value="' + (rec ? esc(rec.v) : '') + '" placeholder="今日做咗？例：14kg × 10">' +
+              '<button type="button" data-save="' + esc(name) + '">記低</button>' +
+            '</div>') +
+        '</div>';
+    });
+    el('l-rows').innerHTML = html;
+    el('l-cnt').textContent = peeking ? n + ' 個動作' : '撳數字 = 打勾';
+    updateBar(peeking, n);
+  }
+
+  function updateBar(peeking, total) {
+    if (peeking || !total || !CAN_SAVE) { el('bar').hidden = true; return; }
+    el('bar').hidden = false;
+    var done = 0;
+    for (var k in dayState) { if (k.charAt(0) === 'x' && dayState[k] === true) done++; }
+    if (done > total) done = total;
+    el('b-n').textContent = done;
+    el('b-t').textContent = total;
+    el('b-fill').style.width = (done / total * 100) + '%';
+    el('b-lab').textContent = done >= total ? '今日練完喇 ✓' : '今日動作';
+  }
+
+  // ── 週條 ───────────────────────────────────────
+  function renderStrip() {
+    var order = [1, 2, 3, 4, 5, 6, 0], s = '';
+    order.forEach(function (d) {
+      var info = DAYS[d], cls = 'sd';
+      if (phase !== 'done' && d === realDow) cls += ' on';
+      else if (!info.ex) cls += ' off';
+      if (d === viewDow && d !== realDow) cls += ' peeking';
+      s += '<button type="button" class="' + cls + '" data-dow="' + d + '">' +
+           '<span class="w">' + WD[d] + '</span>' +
+           '<span class="l">' + info.t.replace('日', '') + '</span></button>';
+    });
+    el('strip').innerHTML = s;
+  }
+
+  function renderDay(d) {
+    viewDow = d;
+    var day = DAYS[d], peeking = d !== realDow;
+    el('hero').className = 'hero ' + (day.cls || '') + (peeking ? ' peek' : '');
+    el('h-kick').textContent = peeking ? '星期' + WD[d] : '今日';
+    el('h-title').textContent = day.t;
+    el('h-sub').textContent = day.s;
+    var note = peeking ? (day.note || '') : (day.note || '') + (phaseNote ? (day.note ? '<br><br>' : '') + phaseNote : '');
+    el('h-note').innerHTML = note;
+    el('h-note').hidden = !note;
+    el('h-back').hidden = !peeking;
+    renderLifts(day, peeking);
+    renderStrip();
+  }
+
+  // ── 事件 ───────────────────────────────────────
+  el('l-rows').addEventListener('click', function (ev) {
+    var t = ev.target.closest('button');
+    if (!t) return;
+
+    if (t.dataset.c !== undefined) {
+      var c = el('cue' + t.dataset.c), open = t.getAttribute('aria-expanded') === 'true';
+      t.setAttribute('aria-expanded', open ? 'false' : 'true');
+      c.hidden = open;
+      t.querySelector('.tog').textContent = open ? '＋' : '−';
+      return;
+    }
+    if (t.dataset.tick !== undefined) {
+      var i = t.dataset.tick, row = t.closest('.row');
+      var now = !(dayState['x' + i] === true);
+      dayState['x' + i] = now; saveDay();
+      row.classList.toggle('done', now);
+      t.setAttribute('aria-pressed', now ? 'true' : 'false');
+      t.textContent = now ? '✓' : t.dataset.n;
+      updateBar(false, +el('b-t').textContent);
+      return;
+    }
+    if (t.dataset.save !== undefined) {
+      var name = t.dataset.save;
+      var inp = el('l-rows').querySelector('[data-log="' + name.replace(/"/g, '\\"') + '"]');
+      if (!inp) return;
+      var v = inp.value.trim();
+      if (v) { log[name] = { v: v, d: iso(today) }; } else { delete log[name]; }
+      saveLog();
+      t.textContent = '✓ 記低咗';
+      setTimeout(function () { t.textContent = '記低'; }, 1400);
+    }
+  });
+
+  el('strip').addEventListener('click', function (ev) {
+    var b = ev.target.closest('.sd');
+    if (b) renderDay(+b.dataset.dow);
+  });
+  el('h-back').addEventListener('click', function () { renderDay(realDow); });
+
+  // ── 體態 6 分鐘 ────────────────────────────────
+  el('p-rows').innerHTML = POSTURE.map(function (p) {
+    return '<div class="prow"><span class="k">' + esc(p[0]) + '<em>' + esc(p[1]) + '</em></span>' +
+           '<a href="' + vid(p[2]) + '" target="_blank" rel="noopener">▶ 示範</a></div>';
+  }).join('');
+
+  // ── 飲食 ───────────────────────────────────────
+  var isRest = (realDow === 0);
+  el('d-hdr').textContent = '今日食 · ' + (isRest ? '休息日' : '訓練日');
+
+  el('d-meals').innerHTML = [
+    ['早餐', '起身後 1 鐘內', '雞蛋 3 隻 + 番薯 1 個（或燕麥 40g）+ 水果 1 份'],
+    ['午餐', '12:00–14:00', '肉／魚 1.5–2 掌 + ' + (isRest ? '飯 半拳' : '飯 1 拳') + ' + 菜 2 捧'],
+    ['晚餐', '18:00–20:00', '同午餐一樣。訓練日就擺喺練完之後食'],
+    ['肚餓', '任何時候', '無糖希臘乳酪 1 盒　或　烚蛋 2 隻']
+  ].map(function (m) {
+    return '<div class="meal"><div class="mh">' + m[0] + '<i>' + m[1] + '</i></div><p>' + m[2] + '</p></div>';
+  }).join('');
+
+  el('d-rows').innerHTML = [
+    ['蛋白', '每餐 1–2 掌'],
+    ['碳水', isRest ? '每餐 半拳' : '每餐 1 拳'],
+    ['蔬菜', '每餐 2 捧以上'],
+    ['水果', '全日 ≤ 3 份'],
+    ['咖啡', '拿鐵 ≤ 2 杯 · 無糖'],
+    ['外食', '蒸 / 白灼 / 白切 · 汁另上 · 飯食一半']
+  ].map(function (d) {
+    return '<div class="drow"><span class="k">' + d[0] + '</span><span class="v">' + d[1] + '</span></div>';
+  }).join('');
+
+  // ── 主流程 ─────────────────────────────────────
+  var checks;
+  if (phase === 'done') {
+    el('hero').className = 'hero rest';
+    el('h-kick').textContent = '完';
+    el('h-title').textContent = '做完喇';
+    el('h-sub').textContent = '而家係決定下一段嘅時候';
+    el('lifts').hidden = true; el('bar').hidden = true;
+    checks = ['同第一組相並排睇一次'];
+    renderStrip();
+  } else {
+    renderDay(realDow);
+    var d = DAYS[realDow];
+    if (d.ex) checks = BASE_CHECKS.slice();
+    else if (realDow === 0) checks = ['磅重', '影三張相', '量腰圍'].concat(BASE_CHECKS);
+    else checks = [d.chk].concat(BASE_CHECKS);
+  }
+
+  el('c-rows').innerHTML = checks.map(function (c, i) {
+    return '<label class="chk"><input type="checkbox" data-i="c' + i + '"' +
+           (dayState['c' + i] ? ' checked' : '') + '><span>' + esc(c) + '</span></label>';
+  }).join('');
+
+  el('c-rows').addEventListener('change', function (ev) {
+    if (ev.target.tagName !== 'INPUT') return;
+    dayState[ev.target.dataset.i] = ev.target.checked;
+    saveDay();
+  });
+
+  el('foot').innerHTML = '缺一課唔補，行返落一課。<br>' +
+    (CAN_SAVE
+      ? '重量 × 次數撳「記低」，下次自動顯示喺個動作右邊。<br>'
+      : '⚠️ 呢個係檔案版，iPhone 唔畀本機檔案存資料，所以打勾同「記低」暫時收起咗。<br>') +
+    '想睇任何一日就撳下面嗰七格。';
+})();
+</script>
